@@ -36,10 +36,10 @@
 #include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
-#include <visionaray/blending.h>
 #include <visionaray/material.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
+#include <visionaray/pixel_sampler_types.h>
 #include <visionaray/pixel_traits.h>
 #include <visionaray/point_light.h>
 #include <visionaray/render_target.h>
@@ -492,11 +492,11 @@ private:
 
 #ifdef VV_ARCH_CUDA
 
-struct depth_buffer_type : cuda::pixel_pack_buffer
+struct depth_buffer_type : visionaray::cuda::pixel_pack_buffer
 {
     unsigned const* data() const
     {
-        return static_cast<unsigned const*>(cuda::pixel_pack_buffer::data());
+        return static_cast<unsigned const*>(visionaray::cuda::pixel_pack_buffer::data());
     }
 };
 
@@ -545,11 +545,13 @@ public:
 
     static const pixel_format CF = PF_RGBA32F;
     static const pixel_format DF = PF_UNSPECIFIED;
+    static const pixel_format AF = PF_UNSPECIFIED;
 
     using color_type = typename pixel_traits<CF>::type;
     using depth_type = typename pixel_traits<DF>::type;
+    using accum_type = typename pixel_traits<AF>::type;
 
-    using ref_type = render_target_ref<CF, DF>;
+    using ref_type = render_target_ref<CF, DF, AF>;
 
 public:
 
@@ -569,8 +571,9 @@ public:
 
     color_type const* color() const { return color_; }
     depth_type const* depth() const { return depth_; }
+    accum_type * accum() const { return accum_; }
 
-    ref_type ref() { return { color(), depth(), width(), height() }; }
+    ref_type ref() { return { color(), depth(), accum(), width(), height() }; }
 
     void begin_frame() {}
     void end_frame() {}
@@ -580,6 +583,7 @@ public:
 
     color_type* color_;
     depth_type* depth_;
+    accum_type* accum_;
 };
 
 
@@ -1413,9 +1417,10 @@ void vvRayCaster::renderVolumeGL()
         impl_->params.clip_objects.end          = clip_objects_end();
 
         // Composite bricks in back-to-front order
-        pixel_sampler::basic_uniform_blend_type<blending::scale_factor> blend_params;
-        blend_params.sfactor = blending::One;
-        blend_params.dfactor = blending::OneMinusSrcAlpha;
+        //pixel_sampler::basic_uniform_blend_type<blending::scale_factor> blend_params;
+        pixel_sampler::uniform_type blend_params;
+        //blend_params.sfactor = blending::One;
+        //blend_params.dfactor = blending::OneMinusSrcAlpha;
 
         auto sparams = make_sched_params(
             blend_params,
