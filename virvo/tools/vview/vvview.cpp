@@ -1263,7 +1263,7 @@ void vvView::optionsMenuCallback(int item)
     break;
   case 2:                                     // min/maximum intensity projection
     ++ds->mipMode;
-    if (ds->mipMode>2) ds->mipMode = 0;
+    if (ds->mipMode>3) ds->mipMode = 0;
     ds->renderer->setParameter(vvRenderState::VV_MIP_MODE, ds->mipMode);
     cerr << "MIP mode set to " << ds->mipMode << endl;
     break;
