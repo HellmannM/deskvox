@@ -158,22 +158,22 @@ void load(vvVolDesc* vd)
 
     if (header->datatype == NIFTI_TYPE_INT16)
     {
-        vd->mapping(0) = vec2(SHRT_MIN * slope + inter, SHRT_MAX * slope + inter);
-
-        // Remap data
-        for (ssize_t z = 0; z < vd->vox[2]; ++z)
-        {
-            for (ssize_t y = 0; y < vd->vox[1]; ++y)
-            {
-                for (ssize_t x = 0; x < vd->vox[0]; ++x)
-                {
-                    uint8_t* bytes = (*vd)(x, y, z);
-                    int32_t voxel = (int)*reinterpret_cast<int16_t*>(bytes);
-                    voxel -= SHRT_MIN;
-                    *reinterpret_cast<uint16_t*>(bytes) = voxel;
-                }
-            }
-        }
+//        vd->mapping(0) = vec2(SHRT_MIN * slope + inter, SHRT_MAX * slope + inter);
+//
+//        // Remap data
+//        for (ssize_t z = 0; z < vd->vox[2]; ++z)
+//        {
+//            for (ssize_t y = 0; y < vd->vox[1]; ++y)
+//            {
+//                for (ssize_t x = 0; x < vd->vox[0]; ++x)
+//                {
+//                    uint8_t* bytes = (*vd)(x, y, z);
+//                    int32_t voxel = (int)*reinterpret_cast<int16_t*>(bytes);
+//                    voxel -= SHRT_MIN;
+//                    *reinterpret_cast<uint16_t*>(bytes) = voxel;
+//                }
+//            }
+//        }
     }
     else if (header->datatype == NIFTI_TYPE_INT32)
     {
